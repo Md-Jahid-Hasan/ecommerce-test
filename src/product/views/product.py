@@ -26,9 +26,7 @@ class ProductListView(ListView):
     paginate_by = 2
 
     def get_queryset(self):
-        queryset = Product.objects.prefetch_related(Prefetch('productvariantprice_set')).all()
-        x = ProductVariantPrice.objects.filter(product_id=16)
-        print(x.values())
+        queryset = Product.objects.prefetch_related(Prefetch('productvariantprice_set')).all().order_by('-id')
         return queryset
 
     def get_context_data(self, **kwargs):

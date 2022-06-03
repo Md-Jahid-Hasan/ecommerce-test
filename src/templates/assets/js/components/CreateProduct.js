@@ -92,10 +92,10 @@ const CreateProduct = (props) => {
                 console.log('Success:', data);
                 setProductVariantPrices([])
                 setProductDetails({})
-                setProductVariant({
-                    option: 1,
-                    tags: []
-                })
+                // setProductVariant({
+                //     option: 1,
+                //     tags: []
+                // })
             })
             .catch((error) => {
                 console.error('Error:', error);
