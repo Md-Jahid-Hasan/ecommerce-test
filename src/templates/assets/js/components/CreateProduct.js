@@ -7,6 +7,7 @@ import Dropzone from 'react-dropzone'
 const CreateProduct = (props) => {
 
     const [productVariantPrices, setProductVariantPrices] = useState([])
+    const [productDetails, setProductDetails] = useState({})
 
     const [productVariants, setProductVariant] = useState([
         {
@@ -77,7 +78,41 @@ const CreateProduct = (props) => {
     // Save product
     let saveProduct = (event) => {
         event.preventDefault();
+        let data = {details: productDetails, variant: productVariants, price: productVariantPrices}
         // TODO : write your code here to save the product
+        fetch('http://127.0.0.1:8000/product/create-product/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                setProductVariantPrices([])
+                setProductDetails({})
+                setProductVariant({
+                    option: 1,
+                    tags: []
+                })
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    }
+
+    const handleProductVariantPrice = (event, index) => {
+        let x = productVariantPrices.map((varinat, key) => key === index ? {
+            ...varinat,
+            [event.target.name]: event.target.value
+        } : varinat)
+        setProductVariantPrices(x)
+
+    }
+
+    const handleChangeDetails = (event) => {
+        setProductDetails({...productDetails, [event.target.name]: event.target.value})
     }
 
 
@@ -90,15 +125,21 @@ const CreateProduct = (props) => {
                             <div className="card-body">
                                 <div className="form-group">
                                     <label htmlFor="">Product Name</label>
-                                    <input type="text" placeholder="Product Name" className="form-control"/>
+                                    <input type="text" id="title" name="title" value={productDetails.title}
+                                           onChange={handleChangeDetails} placeholder="Product Name"
+                                           className="form-control"/>
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="">Product SKU</label>
-                                    <input type="text" placeholder="Product Name" className="form-control"/>
+                                    <input type="text" id="sku" name="sku" value={productDetails.sku}
+                                           onChange={handleChangeDetails} placeholder="Product Name"
+                                           className="form-control"/>
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="">Description</label>
-                                    <textarea id="" cols="30" rows="4" className="form-control"></textarea>
+                                    <textarea id="" id="description" name="description"
+                                              value={productDetails.description} onChange={handleChangeDetails}
+                                              cols="30" rows="4" className="form-control"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -201,8 +242,14 @@ const CreateProduct = (props) => {
                                                 return (
                                                     <tr key={index}>
                                                         <td>{productVariantPrice.title}</td>
-                                                        <td><input className="form-control" type="text"/></td>
-                                                        <td><input className="form-control" type="text"/></td>
+                                                        <td><input className="form-control" id="price" name="price"
+                                                                   value={productVariantPrice.price}
+                                                                   onChange={(event) => handleProductVariantPrice(event, index)}
+                                                                   type="text"/></td>
+                                                        <td><input className="form-control" id="stocl" name="stock"
+                                                                   value={productVariantPrice.stock}
+                                                                   onChange={(event) => handleProductVariantPrice(event, index)}
+                                                                   type="text"/></td>
                                                     </tr>
                                                 )
                                             })
